@@ -2,7 +2,7 @@
 
 Design, simulation, and performance analysis of a 4-channel optical link built on **Wavelength Division Multiplexing (WDM)**. Four independent data streams are transmitted over a single 50 km single-mode fiber, then separated and recovered at the receiver. The project was modeled and simulated in **OptiSystem**.
 
-![Architecture overview](assets/01_architecture_overview.png)
+![Architecture overview](docs/01_architecture_overview.png)
 
 ---
 
@@ -26,11 +26,11 @@ Traditional single-wavelength On-Off Keying (OOK) links are capacity-limited. WD
 
 This project implements a 4-channel WDM link in the **C-Band** (≈1550 nm / 193 THz region), with strict **100 GHz (0.1 THz)** channel spacing, and evaluates signal integrity after a **50 km unamplified** span.
 
-![Fiber capacity comparison](assets/02_fiber_capacity.png)
+![Fiber capacity comparison](docs/02_fiber_capacity.png)
 
 The link operates in the C-Band target zone of the optical spectrum:
 
-![WDM architecture and spectrum bands](assets/04_wdm_architecture.png)
+![WDM architecture and spectrum bands](docs/04_wdm_architecture.png)
 
 ---
 
@@ -42,19 +42,19 @@ The system is organized into three stages: a transmitter array, the multiplexed 
 
 Four parallel channels. Each channel generates a **Pseudo-Random Bit Sequence (PRBS)**, shaped by an **NRZ Pulse Generator**, which drives a **Mach-Zehnder Modulator (MZM)**. Each MZM is fed an optical carrier by a **Continuous-Wave (CW) Laser**.
 
-![Stage 1 — Transmitter array](assets/06_stage1_transmitter.png)
+![Stage 1 — Transmitter array](docs/06_stage1_transmitter.png)
 
 ### Stage 2 — Multiplexing & Optical Link
 
 The four modulated signals are combined by a **4×1 WDM Multiplexer** and launched into a **50 km Single-Mode Fiber**. The 100 GHz spacing forms a guard band that prevents inter-channel crosstalk.
 
-![Stage 2 — 100 GHz multiplexing link](assets/07_stage2_mux_link.png)
+![Stage 2 — 100 GHz multiplexing link](docs/07_stage2_mux_link.png)
 
 ### Stage 3 — Receiver (Rx) Array
 
 A **1×4 WDM Demultiplexer** separates the channels. Each channel passes through a **PIN Photodiode** (optical-to-electrical conversion), a **Low-Pass Bessel Filter**, and a **3R Regenerator & Decision Circuit** to recover the digital sequence.
 
-![Stage 3 — Receiver array](assets/08_stage3_receiver.png)
+![Stage 3 — Receiver array](docs/08_stage3_receiver.png)
 
 ### Component Selection
 
@@ -63,7 +63,7 @@ A **1×4 WDM Demultiplexer** separates the channels. Each channel passes through
 | Transmitter source | **CW Laser** | Narrow spectral width, higher coupled power, supports long unamplified reach |
 | Photodetector | **PIN Photodiode** | Baseline optical-to-electrical conversion without internal gain |
 
-![Component selection matrix](assets/05_component_selection.png)
+![Component selection matrix](docs/05_component_selection.png)
 
 ---
 
@@ -83,7 +83,7 @@ The maximum unamplified reach is governed by the optical power budget:
 
 > **P_T = P_S − P_R = N·l_c + α·L + margin**
 
-![The physics of optical constraints](assets/03_optical_constraints.png)
+![The physics of optical constraints](docs/03_optical_constraints.png)
 
 ---
 
@@ -93,13 +93,13 @@ The maximum unamplified reach is governed by the optical power budget:
 
 The OSA connected after the multiplexer confirms successful aggregation of the four carriers. Four clearly defined peaks appear with no severe overlap, validating the 100 GHz spacing and MUX/DEMUX functionality.
 
-![OSA spectrum result](assets/09_result_osa_spectrum.png)
+![OSA spectrum result](docs/09_result_osa_spectrum.png)
 
 ### Result II — Signal Integrity (Channel 1)
 
 Signal integrity was evaluated by overlapping sampled pulse streams into an **eye diagram**. A wide, clear eye indicates a healthy signal; a closing eye indicates noise, dispersion, and inter-symbol interference.
 
-![Eye diagram concept](assets/10_eye_diagram_concept.png)
+![Eye diagram concept](docs/10_eye_diagram_concept.png)
 
 Recovered metrics for Channel 1 after the 50 km span:
 
@@ -108,7 +108,7 @@ Recovered metrics for Channel 1 after the 50 km span:
 | **Maximum Q-Factor** | **3.97034** | Q ≥ 6 |
 | **Minimum BER** | **2.86963 × 10⁻⁵** | lower is better |
 
-![Q-Factor and BER result](assets/11_result_qfactor_ber.png)
+![Q-Factor and BER result](docs/11_result_qfactor_ber.png)
 
 ---
 
@@ -118,11 +118,11 @@ The architecture is **functionally sound** — signals are successfully multiple
 
 This is **not a hardware/design failure** — it is an expected power penalty. Pushing a signal through 50 km of single-mode fiber **without amplification** drives the received power perilously close to the photodiode's noise floor, as the link-loss waterfall shows.
 
-![Link-loss waterfall and degradation synthesis](assets/12_link_loss_waterfall.png)
+![Link-loss waterfall and degradation synthesis](docs/12_link_loss_waterfall.png)
 
 The core takeaway: WDM elegantly solves the **capacity** problem, but the link remains constrained by the **distance** problem. Effective design means actively managing signal decay, not just routing light.
 
-![The optical balancing act](assets/14_optical_balancing_act.png)
+![The optical balancing act](docs/14_optical_balancing_act.png)
 
 ---
 
@@ -133,35 +133,8 @@ To reach a deployable Q ≥ 6, the signal-to-noise ratio must be improved. Two c
 1. **Inline amplification** — Insert an **Erbium-Doped Fiber Amplifier (EDFA)** inline or as a pre-amplifier to periodically restore signal power along the span. (Trade-off: amplifiers add ASE noise that accumulates with each stage.)
 2. **Power tuning** — Increase the initial CW laser launch power to shift the entire link-budget waterfall upward, keeping the signal above the noise floor across the full 50 km.
 
-![Optimization strategies](assets/13_optimization_strategies.png)
+![Optimization strategies](docs/13_optimization_strategies.png)
 
----
-
-## Repository Structure
-
-```
-optical-communication-system/
-├── README.md
-├── Project1.osd                     # OptiSystem design file
-├── docs/
-│   ├── WDM_System_Simulation_Report.pdf
-│   └── 4x4_WDM_System_Analysis.pdf
-└── assets/                          # Figures used in this README
-    ├── 01_architecture_overview.png
-    ├── 02_fiber_capacity.png
-    ├── 03_optical_constraints.png
-    ├── 04_wdm_architecture.png
-    ├── 05_component_selection.png
-    ├── 06_stage1_transmitter.png
-    ├── 07_stage2_mux_link.png
-    ├── 08_stage3_receiver.png
-    ├── 09_result_osa_spectrum.png
-    ├── 10_eye_diagram_concept.png
-    ├── 11_result_qfactor_ber.png
-    ├── 12_link_loss_waterfall.png
-    ├── 13_optimization_strategies.png
-    └── 14_optical_balancing_act.png
-```
 
 ---
 
@@ -173,7 +146,7 @@ This project was built and simulated in **Optiwave OptiSystem**.
 2. Open `Project1.osd` in OptiSystem.
 3. Run the simulation and inspect results via the OSA visualizer (post-MUX) and the BER Analyzer / eye diagram (Rx Channel 1).
 
-The exported figures in `assets/` reproduce the key diagrams and results without needing the software open.
+The exported figures in `docs/` reproduce the key diagrams and results without needing the software open.
 
 ---
 
